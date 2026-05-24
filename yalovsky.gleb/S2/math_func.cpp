@@ -124,7 +124,7 @@ yalovsky::lli_t yalovsky::mult(const lli_t& lhs, const lli_t& rhs)
   return lhs * rhs;
 }
 
-alovsky::lli_t yalovsky::div(const lli_t& lhs, const lli_t& rhs)
+yalovsky::lli_t yalovsky::div(const lli_t& lhs, const lli_t& rhs)
 {
   const lli_t minValue = std::numeric_limits< lli_t >::min();
   if (rhs == 0)
@@ -208,7 +208,7 @@ void yalovsky::getInfix(std::istream& in, Stack< Queue< std::string > >& express
   }
 }
 
-oid yalovsky::convertInfToPost(const Queue< std::string >& infix, Queue< std::string >& postfix)
+void yalovsky::convertInfToPost(const Queue< std::string >& infix, Queue< std::string >& postfix)
 {
   Queue< std::string > input(infix);
   Stack< std::string > operators;
