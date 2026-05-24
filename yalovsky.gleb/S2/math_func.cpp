@@ -103,3 +103,37 @@ yalovsky::lli_t yalovsky::mult(const lli_t& lhs, const lli_t& rhs)
   }
   return lhs * rhs;
 }
+
+alovsky::lli_t yalovsky::div(const lli_t& lhs, const lli_t& rhs)
+{
+  const lli_t minValue = std::numeric_limits< lli_t >::min();
+  if (rhs == 0)
+  {
+    throw std::invalid_argument("Div by zero");
+  }
+  if (lhs == minValue && rhs == -1)
+  {
+    throw std::overflow_error("Div overflow");
+  }
+  return lhs / rhs;
+}
+
+yalovsky::lli_t yalovsky::mod(const lli_t& lhs, const lli_t& rhs)
+{
+  const lli_t minValue = std::numeric_limits< lli_t >::min();
+  if (rhs == 0)
+  {
+    throw std::invalid_argument("Mod by zero");
+  }
+  if (lhs == minValue && rhs == -1)
+  {
+    throw std::overflow_error("Mod overflow");
+  }
+
+  lli_t result = lhs % rhs;
+  if (result < 0)
+  {
+    result += std::llabs(rhs);
+  }
+  return result;
+}
