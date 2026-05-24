@@ -137,3 +137,8 @@ yalovsky::lli_t yalovsky::mod(const lli_t& lhs, const lli_t& rhs)
   }
   return result;
 }
+
+yalovsky::lli_t yalovsky::bitOr(const lli_t& lhs, const lli_t& rhs)
+{
+  return lhs | rhs;
+}
