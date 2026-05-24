@@ -15,6 +15,26 @@ namespace
   {
     return symbol == ' ' || symbol == '\t' || symbol == '\r';
   }
+  
+  yalovsky::lli_t parseNumber(const std::string& token)
+  {
+    std::size_t parsedSize = 0;
+    yalovsky::lli_t value = 0;
+    try
+    {
+      value = std::stoll(token, &parsedSize);
+    }
+    catch (const std::exception&)
+    {
+      throw std::invalid_argument("Input error");
+    }
+
+    if (parsedSize != token.size())
+    {
+      throw std::invalid_argument("Input error");
+    }
+    return value;
+  }
 }
 
 bool yalovsky::isOperator(const std::string& token)
