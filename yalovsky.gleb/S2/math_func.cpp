@@ -39,3 +39,25 @@ int yalovsky::getPriority(const std::string& token)
   }
   throw std::invalid_argument("Input error");
 }
+
+yalovsky::lli_t yalovsky::add(const lli_t& lhs, const lli_t& rhs)
+{
+  const lli_t maxValue = std::numeric_limits< lli_t >::max();
+  const lli_t minValue = std::numeric_limits< lli_t >::min();
+  if ((rhs > 0 && lhs > maxValue - rhs) || (rhs < 0 && lhs < minValue - rhs))
+  {
+    throw std::overflow_error("Add overflow");
+  }
+  return lhs + rhs;
+}
+
+yalovsky::lli_t yalovsky::sub(const lli_t& lhs, const lli_t& rhs)
+{
+  const lli_t maxValue = std::numeric_limits< lli_t >::max();
+  const lli_t minValue = std::numeric_limits< lli_t >::min();
+  if ((rhs > 0 && lhs < minValue + rhs) || (rhs < 0 && lhs > maxValue + rhs))
+  {
+    throw std::overflow_error("Sub overflow");
+  }
+  return lhs - rhs;
+}
