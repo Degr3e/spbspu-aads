@@ -142,3 +142,48 @@ yalovsky::lli_t yalovsky::bitOr(const lli_t& lhs, const lli_t& rhs)
 {
   return lhs | rhs;
 }
+
+void yalovsky::getInfix(std::istream& in, Stack< Queue< std::string > >& expressions)
+{
+  char symbol = 0;
+  std::string token;
+  Queue< std::string > expression;
+
+  while (in.get(symbol))
+  {
+    if (symbol == '\n')
+    {
+      if (!token.empty())
+      {
+        expression.push(token);
+        token.clear();
+      }
+      if (!expression.empty())
+      {
+        expressions.push(expression);
+        expression.clear();
+      }
+    }
+    else if (isDelimiter(symbol))
+    {
+      if (!token.empty())
+      {
+        expression.push(token);
+        token.clear();
+      }
+    }
+    else
+    {
+      token += symbol;
+    }
+  }
+
+  if (!token.empty())
+  {
+    expression.push(token);
+  }
+  if (!expression.empty())
+  {
+    expressions.push(expression);
+  }
+}
