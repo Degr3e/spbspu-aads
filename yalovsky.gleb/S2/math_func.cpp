@@ -15,7 +15,7 @@ namespace
   {
     return symbol == ' ' || symbol == '\t' || symbol == '\r';
   }
-  
+
   yalovsky::lli_t parseNumber(const std::string& token)
   {
     std::size_t parsedSize = 0;
@@ -261,4 +261,60 @@ oid yalovsky::convertInfToPost(const Queue< std::string >& infix, Queue< std::st
     }
     postfix.push(operators.drop());
   }
+}
+
+std::string yalovsky::calculate(const Queue< std::string >& postfix)
+{
+  Queue< std::string > input(postfix);
+  Stack< lli_t > values;
+
+  while (!input.empty())
+  {
+    const std::string token = input.drop();
+    if (!isOperator(token))
+    {
+      values.push(parseNumber(token));
+      continue;
+    }
+
+    if (values.size() < 2)
+    {
+      throw std::invalid_argument("Input error");
+    }
+
+    const lli_t rhs = values.drop();
+    const lli_t lhs = values.drop();
+    lli_t result = 0;
+    if (token == "+")
+    {
+      result = add(lhs, rhs);
+    }
+    else if (token == "-")
+    {
+      result = sub(lhs, rhs);
+    }
+    else if (token == "*")
+    {
+      result = mult(lhs, rhs);
+    }
+    else if (token == "/")
+    {
+      result = div(lhs, rhs);
+    }
+    else if (token == "%")
+    {
+      result = mod(lhs, rhs);
+    }
+    else
+    {
+      result = bitOr(lhs, rhs);
+    }
+    values.push(result);
+  }
+
+  if (values.size() != 1)
+  {
+    throw std::invalid_argument("Input error");
+  }
+  return std::to_string(values.top());
 }
