@@ -187,3 +187,58 @@ void yalovsky::getInfix(std::istream& in, Stack< Queue< std::string > >& express
     expressions.push(expression);
   }
 }
+
+oid yalovsky::convertInfToPost(const Queue< std::string >& infix, Queue< std::string >& postfix)
+{
+  Queue< std::string > input(infix);
+  Stack< std::string > operators;
+
+  while (!input.empty())
+  {
+    const std::string token = input.drop();
+    if (token == "(")
+    {
+      operators.push(token);
+    }
+    else if (token == ")")
+    {
+      bool wasOpenBracket = false;
+      while (!operators.empty())
+      {
+        if (operators.top() == "(")
+        {
+          operators.pop();
+          wasOpenBracket = true;
+          break;
+        }
+        postfix.push(operators.drop());
+      }
+      if (!wasOpenBracket)
+      {
+        throw std::invalid_argument("Input error");
+      }
+    }
+    else if (isOperator(token))
+    {
+      while (!operators.empty() && operators.top() != "("
+          && getPriority(operators.top()) >= getPriority(token))
+      {
+        postfix.push(operators.drop());
+      }
+      operators.push(token);
+    }
+    else
+    {
+      postfix.push(token);
+    }
+  }
+
+  while (!operators.empty())
+  {
+    if (operators.top() == "(")
+    {
+      throw std::invalid_argument("Input error");
+    }
+    postfix.push(operators.drop());
+  }
+}
