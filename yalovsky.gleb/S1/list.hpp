@@ -1,12 +1,13 @@
-#ifndef YALOVSKY_LIST_HPP
-#define YALOVSKY_LIST_HPP
+#ifndef LIST_HPP
+#define LIST_HPP
 
 #include <cstddef>
+#include <memory>
 #include <utility>
 
-#include "node.hpp"
-#include "iterator.hpp"
 #include "const-iterator.hpp"
+#include "iterator.hpp"
+#include "node.hpp"
 
 namespace yalovsky
 {
@@ -37,11 +38,14 @@ namespace yalovsky
     T& back();
     const T& back() const;
 
-    iterator insert(iterator pos, const T& value);
-    iterator erase(iterator pos) noexcept;
+    iterator insert(iterator position, const T& value);
+    iterator insert(iterator position, T&& value);
+    iterator erase(iterator position) noexcept;
 
     void pushFront(const T& value);
+    void pushFront(T&& value);
     void pushBack(const T& value);
+    void pushBack(T&& value);
     void popFront() noexcept;
     void popBack() noexcept;
 
@@ -52,10 +56,7 @@ namespace yalovsky
     std::size_t size() const noexcept;
 
   private:
-    static void linkBefore(NodeBase* pos, NodeBase* node) noexcept;
-    static void unlink(NodeBase* node) noexcept;
-
-    NodeBase fake_;
+    detail::Node< T > fake_;
     std::size_t size_;
   };
 
@@ -139,7 +140,7 @@ namespace yalovsky
   template< class T >
   typename List< T >::const_iterator List< T >::end() const noexcept
   {
-    return const_iterator(const_cast< NodeBase* >(std::addressof(fake_)));
+    return const_iterator(std::addressof(fake_));
   }
 
   template< class T >
@@ -183,20 +184,29 @@ namespace yalovsky
   }
 
   template< class T >
-  typename List< T >::iterator List< T >::insert(iterator pos, const T& value)
+  typename List< T >::iterator List< T >::insert(iterator position, const T& value)
   {
-    Node< T >* node = new Node< T >(value);
-    linkBefore(pos.node_, node);
+    detail::Node< T >* node = new detail::Node< T >(value);
+    detail::linkBefore(position.node_, node);
     ++size_;
     return iterator(node);
   }
 
   template< class T >
-  typename List< T >::iterator List< T >::erase(iterator pos) noexcept
+  typename List< T >::iterator List< T >::insert(iterator position, T&& value)
   {
-    NodeBase* next = pos.node_->next_;
-    unlink(pos.node_);
-    delete static_cast< Node< T >* >(pos.node_);
+    detail::Node< T >* node = new detail::Node< T >(std::move(value));
+    detail::linkBefore(position.node_, node);
+    ++size_;
+    return iterator(node);
+  }
+
+  template< class T >
+  typename List< T >::iterator List< T >::erase(iterator position) noexcept
+  {
+    detail::Node< T >* next = position.node_->next_;
+    detail::unlink(position.node_);
+    delete position.node_;
     --size_;
     return iterator(next);
   }
@@ -208,9 +218,21 @@ namespace yalovsky
   }
 
   template< class T >
+  void List< T >::pushFront(T&& value)
+  {
+    insert(begin(), std::move(value));
+  }
+
+  template< class T >
   void List< T >::pushBack(const T& value)
   {
     insert(end(), value);
+  }
+
+  template< class T >
+  void List< T >::pushBack(T&& value)
+  {
+    insert(end(), std::move(value));
   }
 
   template< class T >
@@ -282,22 +304,6 @@ namespace yalovsky
   std::size_t List< T >::size() const noexcept
   {
     return size_;
-  }
-
-  template< class T >
-  void List< T >::linkBefore(NodeBase* pos, NodeBase* node) noexcept
-  {
-    node->next_ = pos;
-    node->prev_ = pos->prev_;
-    pos->prev_->next_ = node;
-    pos->prev_ = node;
-  }
-
-  template< class T >
-  void List< T >::unlink(NodeBase* node) noexcept
-  {
-    node->prev_->next_ = node->next_;
-    node->next_->prev_ = node->prev_;
   }
 
   template< class T >

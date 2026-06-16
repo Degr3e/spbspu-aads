@@ -1,45 +1,38 @@
 #include "input-output.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <istream>
 #include <limits>
 #include <ostream>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 void yalovsky::readSequences(std::istream& in, SequenceList& sequences)
 {
-  while (true)
+  SequenceList temp;
+  std::string name;
+
+  while (in >> name)
   {
-    std::string name;
-    if (!(in >> name))
-    {
-      return;
-    }
-
     NumberList numbers;
+    std::size_t value = 0;
 
-    while (true)
+    while (in >> value)
     {
-      std::size_t value = 0;
-      if (in >> value)
-      {
-        numbers.pushBack(value);
-      }
-      else
-      {
-        if (in.eof())
-        {
-          sequences.pushBack(std::make_pair(name, std::move(numbers)));
-          return;
-        }
-        in.clear();
-        break;
-      }
+      numbers.pushBack(value);
     }
 
-    sequences.pushBack(std::make_pair(name, std::move(numbers)));
+    temp.pushBack(std::make_pair(std::move(name), std::move(numbers)));
+
+    if (!in.eof())
+    {
+      in.clear();
+    }
   }
+
+  sequences.swap(temp);
 }
 
 void yalovsky::printNames(std::ostream& out, const SequenceList& sequences)
@@ -51,14 +44,14 @@ void yalovsky::printNames(std::ostream& out, const SequenceList& sequences)
 
   for (; it != sequences.cend(); ++it)
   {
-    out << ' ' << it->first;
+    out << ' ';
+    out << it->first;
   }
-
-  out << '\n';
 }
 
 void yalovsky::transposeSequences(const SequenceList& sequences, Matrix& result)
 {
+  Matrix temp;
   std::size_t maxSize = 0;
 
   for (SequenceList::const_iterator it = sequences.cbegin(); it != sequences.cend(); ++it)
@@ -77,12 +70,14 @@ void yalovsky::transposeSequences(const SequenceList& sequences, Matrix& result)
         continue;
       }
 
-      NumberList::const_iterator numIt = it->second.cbegin() + index;
-      row.pushBack(*numIt);
+      NumberList::const_iterator valueIt = it->second.cbegin() + index;
+      row.pushBack(*valueIt);
     }
 
-    result.pushBack(std::move(row));
+    temp.pushBack(std::move(row));
   }
+
+  result.swap(temp);
 }
 
 void yalovsky::printNumberList(std::ostream& out, const NumberList& numbers)
@@ -99,10 +94,9 @@ void yalovsky::printNumberList(std::ostream& out, const NumberList& numbers)
 
   for (; it != numbers.cend(); ++it)
   {
-    out << ' ' << *it;
+    out << ' ';
+    out << *it;
   }
-
-  out << '\n';
 }
 
 void yalovsky::printMatrix(std::ostream& out, const Matrix& matrix)
@@ -110,35 +104,40 @@ void yalovsky::printMatrix(std::ostream& out, const Matrix& matrix)
   for (Matrix::const_iterator it = matrix.cbegin(); it != matrix.cend(); ++it)
   {
     printNumberList(out, *it);
+    out << '\n';
   }
 }
 
 namespace
 {
-  std::size_t addChecked(std::size_t a, std::size_t b)
+  std::size_t addChecked(std::size_t lhs, std::size_t rhs)
   {
-    const std::size_t maxVal = std::numeric_limits< std::size_t >::max();
+    const std::size_t maxValue = std::numeric_limits< std::size_t >::max();
 
-    if (maxVal - a < b)
+    if ((maxValue - lhs) < rhs)
     {
       throw std::overflow_error("overflow");
     }
 
-    return a + b;
+    return lhs + rhs;
   }
 }
 
 void yalovsky::calculateSums(const Matrix& matrix, NumberList& sums)
 {
+  NumberList temp;
+
   for (Matrix::const_iterator rowIt = matrix.cbegin(); rowIt != matrix.cend(); ++rowIt)
   {
     std::size_t sum = 0;
 
-    for (NumberList::const_iterator valIt = rowIt->cbegin(); valIt != rowIt->cend(); ++valIt)
+    for (NumberList::const_iterator valueIt = rowIt->cbegin(); valueIt != rowIt->cend(); ++valueIt)
     {
-      sum = addChecked(sum, *valIt);
+      sum = addChecked(sum, *valueIt);
     }
 
-    sums.pushBack(sum);
+    temp.pushBack(sum);
   }
+
+  sums.swap(temp);
 }

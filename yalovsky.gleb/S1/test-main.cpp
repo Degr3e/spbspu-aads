@@ -1,2 +1,2 @@
-#define BOOST_TEST_MODULE yalovsky_s1_tests
+#define BOOST_TEST_MODULE S1
 #include <boost/test/included/unit_test.hpp>

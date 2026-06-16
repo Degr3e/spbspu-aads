@@ -1,9 +1,9 @@
-#include <boost/test/unit_test.hpp>
-
 #include <limits>
 #include <sstream>
 #include <string>
 #include <utility>
+
+#include <boost/test/unit_test.hpp>
 
 #include "input-output.hpp"
 #include "list.hpp"
@@ -36,14 +36,14 @@ BOOST_AUTO_TEST_CASE(insertAndErase)
   list.pushBack(1);
   list.pushBack(3);
 
-  yalovsky::List< int >::iterator pos = list.begin();
-  ++pos;
-  list.insert(pos, 2);
+  yalovsky::List< int >::iterator position = list.begin();
+  ++position;
+  list.insert(position, 2);
 
   BOOST_TEST(*(list.begin() + 1) == 2);
 
-  pos = list.begin() + 1;
-  yalovsky::List< int >::iterator next = list.erase(pos);
+  position = list.begin() + 1;
+  yalovsky::List< int >::iterator next = list.erase(position);
   BOOST_TEST(*next == 3);
   BOOST_TEST(list.size() == 2);
   BOOST_TEST(*(list.begin() + 1) == 3);
@@ -79,6 +79,17 @@ BOOST_AUTO_TEST_CASE(moveConstructorLeavesSourceValid)
   BOOST_TEST(moved.back() == 20);
   BOOST_TEST(source.empty());
   BOOST_CHECK(source.begin() == source.end());
+}
+
+BOOST_AUTO_TEST_CASE(rvaluePushWorks)
+{
+  yalovsky::List< std::string > list;
+
+  list.pushBack(std::string("one"));
+  list.pushFront(std::string("zero"));
+
+  BOOST_TEST(list.front() == "zero");
+  BOOST_TEST(list.back() == "one");
 }
 
 BOOST_AUTO_TEST_CASE(clearRemovesAllElements)
@@ -146,22 +157,10 @@ BOOST_AUTO_TEST_CASE(transposeAndSumsMatchTaskLogic)
 
   std::ostringstream sumsOut;
   yalovsky::printNumberList(sumsOut, sums);
-  BOOST_TEST(sumsOut.str() == "7 7 3 2\n");
+  BOOST_TEST(sumsOut.str() == "7 7 3 2");
 }
 
-BOOST_AUTO_TEST_CASE(calculateSumsThrowsOnOverflow)
-{
-  yalovsky::Matrix matrix;
-  yalovsky::NumberList row;
-  row.pushBack(std::numeric_limits< std::size_t >::max());
-  row.pushBack(1);
-  matrix.pushBack(row);
-
-  yalovsky::NumberList sums;
-  BOOST_CHECK_THROW(yalovsky::calculateSums(matrix, sums), std::overflow_error);
-}
-
-BOOST_AUTO_TEST_CASE(onlyEmptySequenceProducesZeroSums)
+BOOST_AUTO_TEST_CASE(onlyEmptySequenceProducesEmptySums)
 {
   std::istringstream input("d\n");
   yalovsky::SequenceList sequences;
@@ -179,4 +178,16 @@ BOOST_AUTO_TEST_CASE(onlyEmptySequenceProducesZeroSums)
   yalovsky::NumberList sums;
   yalovsky::calculateSums(matrix, sums);
   BOOST_TEST(sums.empty());
+}
+
+BOOST_AUTO_TEST_CASE(calculateSumsThrowsOnOverflow)
+{
+  yalovsky::Matrix matrix;
+  yalovsky::NumberList row;
+  row.pushBack(std::numeric_limits< std::size_t >::max());
+  row.pushBack(1);
+  matrix.pushBack(row);
+
+  yalovsky::NumberList sums;
+  BOOST_CHECK_THROW(yalovsky::calculateSums(matrix, sums), std::overflow_error);
 }

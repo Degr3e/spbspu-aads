@@ -1,5 +1,5 @@
-#ifndef YALOVSKY_ITERATOR_HPP
-#define YALOVSKY_ITERATOR_HPP
+#ifndef ITERATOR_HPP
+#define ITERATOR_HPP
 
 #include <cassert>
 #include <cstddef>
@@ -19,9 +19,6 @@ namespace yalovsky
   template< class T >
   class LIter
   {
-    friend class List< T >;
-    friend class LCIter< T >;
-
   public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = T;
@@ -39,16 +36,19 @@ namespace yalovsky
     LIter operator--(int) noexcept;
     LIter operator-(std::size_t step) const noexcept;
 
-    T& operator*() const;
-    T* operator->() const;
+    T& operator*();
+    T* operator->();
 
     bool operator==(const LIter& other) const noexcept;
     bool operator!=(const LIter& other) const noexcept;
 
   private:
-    explicit LIter(NodeBase* node) noexcept;
+    detail::Node< T >* node_;
 
-    NodeBase* node_;
+    explicit LIter(detail::Node< T >* node) noexcept;
+
+    friend class List< T >;
+    friend class LCIter< T >;
   };
 
   template< class T >
@@ -57,7 +57,7 @@ namespace yalovsky
   {}
 
   template< class T >
-  LIter< T >::LIter(NodeBase* node) noexcept:
+  LIter< T >::LIter(detail::Node< T >* node) noexcept:
     node_(node)
   {}
 
@@ -116,14 +116,14 @@ namespace yalovsky
   }
 
   template< class T >
-  T& LIter< T >::operator*() const
+  T& LIter< T >::operator*()
   {
     assert(node_ != nullptr);
-    return static_cast< Node< T >* >(node_)->value_;
+    return node_->value();
   }
 
   template< class T >
-  T* LIter< T >::operator->() const
+  T* LIter< T >::operator->()
   {
     return std::addressof(operator*());
   }

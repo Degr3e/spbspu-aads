@@ -1,13 +1,13 @@
-#ifndef YALOVSKY_CONST_ITERATOR_HPP
-#define YALOVSKY_CONST_ITERATOR_HPP
+#ifndef CONST_ITERATOR_HPP
+#define CONST_ITERATOR_HPP
 
 #include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <memory>
 
-#include "node.hpp"
 #include "iterator.hpp"
+#include "node.hpp"
 
 namespace yalovsky
 {
@@ -17,8 +17,6 @@ namespace yalovsky
   template< class T >
   class LCIter
   {
-    friend class List< T >;
-
   public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = T;
@@ -44,9 +42,11 @@ namespace yalovsky
     bool operator!=(const LCIter& other) const noexcept;
 
   private:
-    explicit LCIter(NodeBase* node) noexcept;
+    const detail::Node< T >* node_;
 
-    NodeBase* node_;
+    explicit LCIter(const detail::Node< T >* node) noexcept;
+
+    friend class List< T >;
   };
 
   template< class T >
@@ -60,7 +60,7 @@ namespace yalovsky
   {}
 
   template< class T >
-  LCIter< T >::LCIter(NodeBase* node) noexcept:
+  LCIter< T >::LCIter(const detail::Node< T >* node) noexcept:
     node_(node)
   {}
 
@@ -122,7 +122,7 @@ namespace yalovsky
   const T& LCIter< T >::operator*() const
   {
     assert(node_ != nullptr);
-    return static_cast< const Node< T >* >(node_)->value_;
+    return node_->value();
   }
 
   template< class T >

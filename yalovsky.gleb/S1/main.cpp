@@ -1,7 +1,7 @@
-#include "input-output.hpp"
-
 #include <exception>
 #include <iostream>
+
+#include "input-output.hpp"
 
 int main()
 {
@@ -18,6 +18,7 @@ int main()
     }
 
     yalovsky::printNames(std::cout, sequences);
+    std::cout << '\n';
 
     yalovsky::Matrix matrix;
     yalovsky::transposeSequences(sequences, matrix);
@@ -33,6 +34,7 @@ int main()
     else
     {
       yalovsky::printNumberList(std::cout, sums);
+      std::cout << '\n';
     }
   }
   catch (const std::exception& e)

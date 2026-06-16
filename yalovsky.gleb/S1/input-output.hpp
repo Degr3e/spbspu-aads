@@ -1,5 +1,5 @@
-#ifndef YALOVSKY_INPUT_OUTPUT_HPP
-#define YALOVSKY_INPUT_OUTPUT_HPP
+#ifndef INPUT_OUTPUT_HPP
+#define INPUT_OUTPUT_HPP
 
 #include <cstddef>
 #include <iosfwd>
