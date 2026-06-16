@@ -1,7 +1,8 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <optional>
+#include <boost/optional.hpp>
+
 #include <utility>
 
 namespace yalovsky
@@ -18,7 +19,7 @@ namespace yalovsky
       Node() noexcept:
         next_(this),
         prev_(this),
-        value_(std::nullopt)
+        value_()
       {}
 
       explicit Node(const T& value):
@@ -44,7 +45,7 @@ namespace yalovsky
       }
 
     private:
-      std::optional< T > value_;
+      boost::optional< T > value_;
     };
 
     template< class T >
