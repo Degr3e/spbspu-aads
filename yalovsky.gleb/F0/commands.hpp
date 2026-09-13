@@ -21,6 +21,8 @@ namespace yalovsky
     void showGraphsCommand(std::istream& input, std::ostream& output, GraphStorage& storage);
     void showCitiesCommand(std::istream& input, std::ostream& output, GraphStorage& storage);
     void showGraphCommand(std::istream& input, std::ostream& output, GraphStorage& storage);
+    void findPathCommand(std::istream& input, std::ostream& output, GraphStorage& storage);
+    void suggestRoadCommand(std::istream& input, std::ostream& output, GraphStorage& storage);
   }
 }
 

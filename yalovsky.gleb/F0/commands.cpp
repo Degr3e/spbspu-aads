@@ -7,6 +7,7 @@
 #include "avl-map.hpp"
 #include "graph-storage.hpp"
 #include "input.hpp"
+#include "algorithms.hpp"
 
 void yalovsky::runCommands(std::istream& input, std::ostream& output, GraphStorage& storage)
 {
@@ -23,6 +24,8 @@ void yalovsky::runCommands(std::istream& input, std::ostream& output, GraphStora
   commands.insert("show-graphs", detail::showGraphsCommand);
   commands.insert("show-cities", detail::showCitiesCommand);
   commands.insert("show-graph", detail::showGraphCommand);
+  commands.insert("find-path", detail::findPathCommand);
+  commands.insert("suggest-road", detail::suggestRoadCommand);
 
   std::string line;
   while (std::getline(input, line))
@@ -189,4 +192,39 @@ void yalovsky::detail::showGraphCommand(std::istream& input, std::ostream& outpu
       }
     });
   });
+}
+
+void yalovsky::detail::findPathCommand(std::istream& input, std::ostream& output,
+    GraphStorage& storage)
+{
+  const std::string graph = readToken(input);
+  const std::string from = readToken(input);
+  const std::string to = readToken(input);
+  requireEnd(input);
+
+  const PathResult path = findShortestPath(storage.getGraph(graph), from, to);
+
+  output << "Path: ";
+  for (std::size_t index = 0; index < path.size; ++index)
+  {
+    if (index != 0)
+    {
+      output << " -> ";
+    }
+    output << path.cities[index];
+  }
+  output << "\nDistance: " << path.distance << '\n';
+}
+
+void yalovsky::detail::suggestRoadCommand(std::istream& input, std::ostream& output,
+    GraphStorage& storage)
+{
+  const std::string graph = readToken(input);
+  const Distance weight = readUnsigned(input);
+  requireEnd(input);
+
+  const RoadSuggestion suggestion = suggestRoad(storage.getGraph(graph), weight);
+  output << "<SUGGESTED ROAD: " << suggestion.from << ' ' << suggestion.to
+      << ", WEIGHT: " << suggestion.weight
+      << ", IMPROVEMENT: " << suggestion.improvement << ">\n";
 }

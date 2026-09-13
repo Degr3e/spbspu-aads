@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <utility>
 
+
 namespace yalovsky
 {
   namespace detail
