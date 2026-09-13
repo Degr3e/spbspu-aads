@@ -1,43 +1,26 @@
+#include <exception>
 #include <iostream>
-#include <sstream>
-#include <string>
+#include "commands.hpp"
+#include "graph-storage.hpp"
 
-int main()
+int main(int argc, char**)
 {
-  std::string line;
-
-  while (std::getline(std::cin, line))
+  if (argc != 1)
   {
-    std::istringstream input(line);
-    std::string command;
-    if (!(input >> command))
-    {
-      continue;
-    }
-
-    std::string extra;
-    if (input >> extra)
-    {
-      std::cout << "<INVALID COMMAND>\n";
-    }
-    else if (command == "help")
-    {
-      std::cout << "help\nexit\n";
-    }
-    else if (command == "exit")
-    {
-      return 0;
-    }
-    else
-    {
-      std::cout << "<INVALID COMMAND>\n";
-    }
+    std::cerr << "This program does not accept command line arguments\n";
+    return 1;
   }
 
-  if (std::cin.bad() || !std::cout)
+  try
   {
-    std::cerr << "Input/output error\n";
+    yalovsky::GraphStorage storage;
+    yalovsky::runCommands(std::cin, std::cout, storage);
+  }
+  catch (const std::exception& error)
+  {
+    std::cerr << "Internal error: " << error.what() << '\n';
     return 2;
   }
+
   return 0;
 }
