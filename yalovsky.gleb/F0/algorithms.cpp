@@ -70,7 +70,7 @@ yalovsky::detail::findDistances(const RoadGraph& graph, const std::string& from)
 
     current->visited = true;
     graph.getRoads(*currentName).forEach(
-        [&states, current, currentName, maximum](const std::string& next, const Distance& weight)
+        [&states, current, currentName](const std::string& next, const Distance& weight)
         {
           PathState& destination = states.at(next);
           if (destination.visited)
