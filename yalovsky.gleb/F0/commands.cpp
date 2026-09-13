@@ -8,6 +8,8 @@
 #include "graph-storage.hpp"
 #include "input.hpp"
 #include "algorithms.hpp"
+#include <fstream>
+#include "file-io.hpp"
 
 void yalovsky::runCommands(std::istream& input, std::ostream& output, GraphStorage& storage)
 {
@@ -26,6 +28,8 @@ void yalovsky::runCommands(std::istream& input, std::ostream& output, GraphStora
   commands.insert("show-graph", detail::showGraphCommand);
   commands.insert("find-path", detail::findPathCommand);
   commands.insert("suggest-road", detail::suggestRoadCommand);
+  commands.insert("save", detail::saveCommand);
+  commands.insert("load", detail::loadCommand);
 
   std::string line;
   while (std::getline(input, line))
@@ -227,4 +231,42 @@ void yalovsky::detail::suggestRoadCommand(std::istream& input, std::ostream& out
   output << "<SUGGESTED ROAD: " << suggestion.from << ' ' << suggestion.to
       << ", WEIGHT: " << suggestion.weight
       << ", IMPROVEMENT: " << suggestion.improvement << ">\n";
+}
+
+void yalovsky::detail::saveCommand(std::istream& input, std::ostream& output,
+    GraphStorage& storage)
+{
+  const std::string filename = readToken(input);
+  requireEnd(input);
+
+  std::ofstream file(filename);
+  if (!file)
+  {
+    throw std::runtime_error("Cannot open output file");
+  }
+
+  writeStorage(file, storage);
+  file.close();
+  if (!file)
+  {
+    throw std::runtime_error("Cannot finish writing file");
+  }
+
+  output << "Saved\n";
+}
+
+void yalovsky::detail::loadCommand(std::istream& input, std::ostream& output,
+    GraphStorage& storage)
+{
+  const std::string filename = readToken(input);
+  requireEnd(input);
+
+  std::ifstream file(filename);
+  if (!file)
+  {
+    throw std::runtime_error("Cannot open input file");
+  }
+
+  readStorage(file, storage);
+  output << "Loaded\n";
 }
