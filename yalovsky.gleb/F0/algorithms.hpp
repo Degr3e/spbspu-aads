@@ -2,15 +2,15 @@
 #define YALOVSKY_F0_ALGORITHMS_HPP
 
 #include <cstddef>
-#include <memory>
 #include <string>
+#include <vector>
 #include "road-graph.hpp"
 
 namespace yalovsky
 {
   struct PathResult
   {
-    std::unique_ptr< std::string[] > cities;
+    std::vector< std::string > cities;
     std::size_t size;
     Distance distance;
   };
@@ -23,9 +23,14 @@ namespace yalovsky
     Distance improvement;
   };
 
-  PathResult findShortestPath(const RoadGraph& graph, const std::string& from,
+  PathResult findShortestPath(
+      const RoadGraph& graph,
+      const std::string& from,
       const std::string& to);
-  RoadSuggestion suggestRoad(const RoadGraph& graph, Distance weight);
+
+  RoadSuggestion suggestRoad(
+      const RoadGraph& graph,
+      Distance weight);
 }
 
 #endif
