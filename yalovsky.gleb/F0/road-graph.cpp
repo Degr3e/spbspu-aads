@@ -6,15 +6,22 @@ bool yalovsky::isValidName(const std::string& name)
   return !name.empty() && name.find_first_of(" \t\n\r\f\v") == std::string::npos;
 }
 
-bool yalovsky::RoadGraph::hasCity(const std::string& name) const
+bool yalovsky::RoadGraph::hasCity(
+    const std::string& name) const
 {
-  return cities_.find(name) != nullptr;
+  return cities_.contains(name);
 }
 
-bool yalovsky::RoadGraph::hasRoad(const std::string& from, const std::string& to) const
+bool yalovsky::RoadGraph::hasRoad(
+    const std::string& from,
+    const std::string& to) const
 {
-  const Roads* roads = cities_.find(from);
-  return roads && roads->find(to);
+  if (!cities_.contains(from))
+  {
+    return false;
+  }
+
+  return cities_.at(from).contains(to);
 }
 
 void yalovsky::RoadGraph::addCity(const std::string& name)
@@ -54,7 +61,7 @@ void yalovsky::RoadGraph::addRoad(const std::string& from, const std::string& to
   Roads& forward = cities_.at(from);
   Roads& backward = cities_.at(to);
 
-  if (forward.find(to))
+  if (forward.contains(to))
   {
     throw std::invalid_argument("Road already exists");
   }
@@ -76,7 +83,7 @@ void yalovsky::RoadGraph::removeRoad(const std::string& from, const std::string&
   Roads& forward = cities_.at(from);
   Roads& backward = cities_.at(to);
 
-  if (!forward.find(to))
+  if (!forward.contains(to))
   {
     throw std::out_of_range("Road not found");
   }

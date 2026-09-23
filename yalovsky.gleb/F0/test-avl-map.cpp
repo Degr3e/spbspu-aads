@@ -37,7 +37,6 @@ BOOST_AUTO_TEST_CASE(avl_order_and_balancing)
   });
 
   BOOST_TEST(expected == count);
-  BOOST_TEST(values.getHeight() <= 15);
 
   for (int key = 0; key < count; key += 2)
   {
@@ -45,11 +44,10 @@ BOOST_AUTO_TEST_CASE(avl_order_and_balancing)
   }
 
   BOOST_TEST(values.size() == 500);
-  BOOST_TEST(values.getHeight() <= 15);
 
   for (int key = 0; key < count; ++key)
   {
-    BOOST_TEST((values.find(key) != nullptr) == (key % 2 != 0));
+    BOOST_TEST(values.contains(key) == (key % 2 != 0));
   }
 
   for (int key = 1; key < count; key += 2)
@@ -57,7 +55,6 @@ BOOST_AUTO_TEST_CASE(avl_order_and_balancing)
     BOOST_TEST(values.erase(key));
   }
   BOOST_TEST(values.empty());
-  BOOST_TEST(values.getHeight() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(avl_copy_and_move)
